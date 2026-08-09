@@ -1,0 +1,87 @@
+openapi: 3.1.0
+info:
+  title: <Component> API
+  version: "1.0.0"
+  description: <what this API is for; link to the LLD>
+  x-trace-id: TR-<scope>-NNN
+  x-status: Draft
+  x-last-updated: "YYYY-MM-DD"
+  x-updated-by: "<name>"
+  x-consumers:
+    - name: <consumer>
+      uses: [<operationId>]
+      need: <what it does with the result>
+  x-versioning: <URI | header | content-negotiation> — <policy>
+  x-compatibility: <backward | full>
+
+servers:
+  - url: /api/v1
+
+security:
+  - <scheme>: []
+
+paths:
+  /<resources>:
+    post:
+      summary: <action>
+      operationId: <camelCase>
+      x-implements: R1
+      x-idempotency: <mechanism, or "safe operation">
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/<Request>' }
+            examples: { default: { value: {} } }
+      responses:
+        '201':
+          description: <...>
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/<Response>' }
+              examples: { default: { value: {} } }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '503': { $ref: '#/components/responses/Unavailable' }
+
+components:
+  schemas:
+    Error:
+      type: object
+      required: [code, message, traceId]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }
+        traceId: { type: string }
+  responses:
+    BadRequest:
+      description: Invalid request
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Unauthorized:
+      description: Not authenticated
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Forbidden:
+      description: Not authorised
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Conflict:
+      description: State conflict
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Unprocessable:
+      description: Semantically invalid
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    RateLimited:
+      description: Rate limit exceeded
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Unavailable:
+      description: Temporarily unavailable
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }

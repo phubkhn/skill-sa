@@ -1,0 +1,24 @@
+{
+  "name": "sa",
+  "version": "1.0.0",
+  "description": "A generic, standards-driven Solution Architect skill set: 17 skills covering intake, drivers, impact, decisions, HLD, flows, LLD, interfaces, data, security, observability, resilience, risk, review, handoff and traceability. Domain-, vendor- and language-agnostic.",
+  "author": {
+    "name": "phubkhn",
+    "url": "https://github.com/phubkhn"
+  },
+  "homepage": "https://github.com/phubkhn/skill-sa",
+  "repository": "https://github.com/phubkhn/skill-sa",
+  "license": "MIT",
+  "keywords": [
+    "solution-architecture",
+    "architecture",
+    "adr",
+    "c4",
+    "hld",
+    "lld",
+    "openapi",
+    "asyncapi",
+    "threat-model",
+    "sdlc"
+  ]
+}

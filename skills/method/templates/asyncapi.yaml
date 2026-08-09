@@ -1,0 +1,42 @@
+asyncapi: 2.6.0
+info:
+  title: <Component> Events
+  version: "1.0.0"
+  description: <what this component publishes and consumes>
+  x-trace-id: TR-<scope>-NNN
+  x-status: Draft
+  x-delivery: at-least-once
+  x-ordering: none | per-key | global
+  x-partition-key: <field>
+  x-compatibility: backward
+  x-retention: <period>
+  x-dlq: <topic name + operational procedure>
+
+channels:
+  <entity>.<past-tense-verb>:
+    description: <fact this event asserts>
+    x-kind: notification | state-transfer | command
+    x-consumers:
+      - name: <component>
+        action: <what it does on receipt>
+        dedup: <how it handles duplicates>
+    publish:
+      operationId: publish<Entity><Verb>
+      message:
+        $ref: '#/components/messages/<Entity><Verb>'
+
+components:
+  messages:
+    <Entity><Verb>:
+      payload:
+        type: object
+        required: [eventId, eventType, version, occurredAt, producer, traceId, payload]
+        properties:
+          eventId: { type: string, format: uuid }
+          eventType: { type: string }
+          version: { type: string }
+          occurredAt: { type: string, format: date-time }
+          producer: { type: string }
+          traceId: { type: string }
+          payload:
+            type: object
