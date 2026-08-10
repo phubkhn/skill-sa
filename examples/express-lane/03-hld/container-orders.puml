@@ -1,0 +1,42 @@
+' Artifact: container
+' Version: 2
+' Last updated: 2026-03-06
+' Updated by: J. Okafor
+' Trace ID: TR-express-lane-001
+' Change type: Update
+' Ref: none
+' Changes: split order-intake out of order-service per ADR-0001; added order-events topic
+
+@startuml container-orders
+!define SYNC -->
+!define ASYNC ..>
+
+title Container view — Orders (express-lane) v2
+
+legend right
+  solid arrow  = synchronous call
+  dotted arrow = asynchronous / event
+endlegend
+
+actor "Submitting client" as client
+
+rectangle "Orders system" as boundary {
+  component "order-intake\n[Java / Spring]\nAccepts, dedups, persists,\npublishes acceptance" as intake
+  component "order-service\n[Java / Spring]\nOrder query and lifecycle" as orders
+  queue     "order-events\n[Kafka topic]\nDurable acceptance handoff" as topic
+  database  "orders-db\n[PostgreSQL 15]\nOrders, idempotency keys" as db
+}
+
+component "fulfilment-service\n[Java]\nProcesses accepted orders" as fulfil
+component "recon-batch\n[Python, nightly]\nDuplicate reconciliation" as recon
+
+client  SYNC  intake  : POST /orders (HTTPS, OIDC)\nbudget 800 ms
+intake  SYNC  db      : write order + idempotency key\nbudget 120 ms
+intake  ASYNC topic   : publish order.accepted
+topic   ASYNC fulfil  : consume order.accepted
+fulfil  SYNC  orders  : update order state (HTTPS)\nbudget 500 ms
+orders  SYNC  db      : read/write order state
+recon   SYNC  db      : read replica, nightly
+client  SYNC  orders  : GET /orders/{id} (status)
+
+@enduml

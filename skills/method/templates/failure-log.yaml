@@ -1,0 +1,33 @@
+# _logs/.failure-log
+#
+# When this skill set produces a bad artifact, the fix is not a better prompt
+# next time — it is a rule that makes the failure impossible or visible.
+# Standard 26 §8.
+#
+# Append-only YAML list. Small by design.
+#
+# Entry schema:
+#
+# - date: <YYYY-MM-DD>
+#   skill: <skill name>
+#   what-went-wrong: <one line>
+#   why-it-was-not-caught: <which gate, checklist item or standard should have caught it>
+#   guardrail-added: <the standard, checklist item or gate condition added — or "none yet">
+#
+# An entry with `guardrail-added: none yet` is a known hole. A review may cite it.
+#
+# Example:
+#
+# - date: 2026-03-11
+#   skill: lld
+#   what-went-wrong: >
+#     Claimed ownership of the Order entity while the data design had already
+#     assigned it elsewhere. The contradiction survived into handoff.
+#   why-it-was-not-caught: >
+#     No consistency check compared a seed artifact against its authority;
+#     the LLD checklist only checked ownership was stated, not that it agreed.
+#   guardrail-added: >
+#     Standard 00 two-pass rule; consistency-matrix check 15 in standard 15;
+#     sa:trace --stale now reports seed/authority conflicts.
+
+[]

@@ -1,6 +1,7 @@
 ---
 name: security
-description: Threat-model the design per trust boundary using STRIDE and specify controls, identity, secrets, encryption, privacy and audit. Use when the user asks for a security design, threat model, or security review of an architecture.
+description: Threat-model the design per trust boundary using STRIDE and specify controls, identity, secrets, encryption, privacy and audit. Use when the user asks for a security design, threat model, or security review of an architecture. Not for scanning source code for vulnerabilities — this threat-models design artifacts.
+allowed-tools: Read, Grep, Glob
 ---
 
 # SA — Threat-model the design and specify controls
@@ -13,9 +14,24 @@ description: Threat-model the design per trust boundary using STRIDE and specify
 | Gate | none |
 | Standards | `../method/standards/01-workflow-protocol.md`, `../method/standards/11-security-standard.md` |
 
-**Method contract:** read `../method/SKILL.md` and `../method/standards/01-workflow-protocol.md` before acting. All nine execution phases (P1–P9) are defined there and are mandatory.
+**Method contract:** read `../method/SKILL.md`, `../method/standards/01-workflow-protocol.md` and `../method/standards/26-operating-guardrails.md` before acting. All nine execution phases (P1–P9) are mandatory, as is the write boundary at P7.
 
 **Checklist:** the `## Checklist` section of `../method/standards/11-security-standard.md` — self-assess item by item in P9.
+
+## When to use
+
+- "threat model this", "security design", "what are the trust boundaries"
+- A new entry point, a new data classification, or a new trust boundary enters the design
+- Authentication, authorisation, secrets, encryption and privacy decisions
+
+## When not to use
+
+| Request | Use instead |
+|---|---|
+| scan source code for vulnerabilities | not this skill set — this threat-models a design |
+| "did we do security properly" | `sa:review` dimension 7 — review checks, this designs |
+| penetration testing, incident response | not this skill set |
+| "what does the security control cost" | `sa:cost` |
 
 ---
 
@@ -37,4 +53,6 @@ Follow `../method/standards/01-workflow-protocol.md` P1–P9.
 10. **Fail-closed behaviour:** state what happens when the authorisation system is unavailable.
 11. Run the design-time checklist in Standard 11; report every unchecked item.
 
-**P9:** report threats without controls, residual risks (which go to the risk register), and checklist failures, then `Next: /sa:gen-observability`.
+**P8:** `../method/templates/security-design.md`.
+
+**P9:** report threats without controls, residual risks (which go to the risk register), and checklist failures, then `Next: sa:resilience <scope>`.

@@ -1,6 +1,7 @@
 # Standard 10 — Data Design
 
-**Artifacts:** `07-data/data-model.puml`, `data-ownership.md`, `migration-plan.md`
+**Artifacts:** `07-data/data-model.puml`, `07-data/data-design.md`, `07-data/migration-plan.md`
+**Templates:** `templates/data-design.md`, `templates/migration-plan.md`
 **Purpose:** data outlives every service that touches it. Design it deliberately.
 
 ## Required content
@@ -42,9 +43,25 @@
 | Dual-run | how long both paths run, and who decides to stop |
 | Cleanup | when the old structure is dropped, and who confirms nothing reads it |
 
+## Coexistence with the system being replaced
+
+A migration plan moves data. A coexistence plan governs the period — usually much longer than anyone budgets — where the old and the new system are both live. State which pattern is in use and what it implies:
+
+| Pattern | What it means | What it demands |
+|---|---|---|
+| Strangler fig | new system takes over capability by capability behind a routing layer | the routing rule, per capability, and who can change it |
+| Anti-corruption layer | a translation boundary keeps the legacy model out of the new one | where the layer lives, what it translates, when it is deleted |
+| Dual-write | both systems are written to during transition | the reconciliation mechanism and the drift alarm — dual-write without reconciliation silently diverges |
+| Read replica / CDC | new system reads a projection of legacy data | freshness contract and what happens when the pipeline stalls |
+| Big-bang cutover | one switch, one moment | the rollback window and the point of no return |
+
+Every coexistence pattern states: **which system is the source of truth for each entity during the transition**, how conflicts are resolved, and the date the arrangement ends. A coexistence period with no end date is the new permanent architecture, and should be designed as one.
+
 ## Anti-patterns
 
 - A data model with no owner column
+- Dual-write with no reconciliation job and no drift metric
+- A coexistence arrangement with no stated end date
 - Retention "as per policy" with no policy referenced
 - Migration with no rollback and no stated point of no return
 - Analytics reading directly from the operational store with no contract
@@ -69,3 +86,4 @@ Self-assess against this list before reporting the artifact done. Report pass/fa
 - [ ] Migration plan present where existing data changes
 - [ ] Migration is reversible, or the point of no return is explicit
 - [ ] Migration has pre-cutover validation and a named cleanup confirmer
+- [ ] Coexistence pattern named where an old system stays live, with the source of truth per entity, the conflict rule, and an end date

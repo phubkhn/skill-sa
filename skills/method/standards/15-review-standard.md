@@ -24,6 +24,23 @@ The reviewer evaluates artifacts against standards and drivers, produces finding
 | 11 | Simplicity | is anything here not justified by a driver? |
 | 12 | Traceability | every element traces up to a driver and down to work |
 | 13 | Buildability | can a team start from this without further architecture decisions? |
+| 14 | Cost | is the design costed, and is the cost proportionate to the outcome? |
+| 15 | Deployability | is the runtime placement designed, or assumed? |
+
+## Simplicity, measured
+
+Dimension 11 is the easiest to wave through, because "is this too complex?" invites an opinion. These are countable, and each one is a *prompt for a justification*, not an automatic finding:
+
+| Signal | Threshold | What it should trigger |
+|---|---|---|
+| New containers introduced by this change | > 5 | one sentence per container on why it is separate |
+| Technologies new to the estate (language, store, broker, runtime) | ≥ 1 | a dedicated ADR each, including the operational cost of the new thing |
+| ADRs in scope | > 10 | check whether several unrelated problems are being solved at once |
+| Sync hops on the primary user path | > 3 | justification against the latency budget |
+| Containers with a single responsibility and no independent scaling or deployment reason | ≥ 1 | why is this not merged with its neighbour? |
+| Elements tracing to no driver | ≥ 1 | already a finding under dimension 12 |
+
+Failing to justify is the finding; the count alone is not.
 
 ## Consistency matrix (mechanical checks)
 
@@ -41,6 +58,15 @@ The reviewer evaluates artifacts against standards and drivers, produces finding
 | Every ADR referenced by the design is `Accepted` | design on a `Proposed` ADR |
 | Every driver appears in ≥1 artifact | unaddressed driver |
 | Every High risk has a mitigation or signed acceptance | unmanaged risk |
+| Every artifact carries a trace-id in its header (any of the four equivalent formats) | untraceable artifact |
+| No artifact is stale against its upstream (Standard 17 table) | stale artifact |
+| No seed artifact contradicts its authority (two-pass rule, Standard 00) | seed/authority conflict — **Major** |
+| Every container appears on exactly one node group in the deployment view | undeployed or double-placed container |
+| Per-hop latency budgets sum within the end-to-end driver target | unallocated or over-allocated budget |
+| Every element has an interface spec path or a written `N/A — <reason>` | G3 cannot be evaluated |
+| Every driver has a verification row with a numeric threshold | unverifiable driver |
+
+Nineteen checks. Run every one and report its result, including the ones that pass. A check that cannot apply — the deployment-view check where the profile requires no deployment view — is reported `N/A` with the reason, never omitted.
 
 ## Finding severity
 
@@ -55,7 +81,7 @@ The reviewer evaluates artifacts against standards and drivers, produces finding
 
 ```markdown
 # Design Review — <scope> — <date>
-| Reviewer | Scope reviewed | Artifacts + versions | Verdict |
+| Reviewer | Profile | Scope reviewed | Artifacts + versions | Verdict |
 
 ## Verdict
 READY | READY WITH CONDITIONS | NOT READY
@@ -73,6 +99,9 @@ Conditions: <numbered, each with owner and by-when>
 ## What is good
 <explicitly — reviewers who only find faults are ignored>
 
+## Not required at this profile
+<artifacts the tailoring profile excludes — listed so their absence is understood, not mistaken for a gap>
+
 ## Not reviewed
 <scope limits — what this review does not cover>
 ```
@@ -84,16 +113,21 @@ Conditions: <numbered, each with owner and by-when>
 3. **The reviewer does not edit the design.** Findings go back to the author.
 4. **Verdict is mechanical**, derived from severity counts — not from mood.
 5. **State what was not reviewed.** An unstated scope limit reads as approval.
+6. **Respect the tailoring profile.** An artifact the profile does not require is listed under "Not required at profile `<p>`" — visible, but not a finding. Reporting a light-profile project as missing twelve documents makes the review worthless.
+7. **The profile is stated in the report header.** A review with no profile cannot be interpreted six months later.
 
 ## Checklist
 
 Self-assess against this list before reporting the artifact done. Report pass/fail **per item** — never a silent pass. A failed item becomes an OPEN item with an owner; it is not deleted to make the list pass.
 
+- [ ] Tailoring profile stated in the report header
 - [ ] Artifact inventory complete with versions and statuses
+- [ ] Artifacts not required at this profile listed as such, not as findings
 - [ ] Quality bar evaluated per artifact, item by item
-- [ ] All 12 consistency-matrix checks run and reported
+- [ ] All 19 consistency-matrix checks run and reported, passes and N/A included
 - [ ] Driver coverage table names the **mechanism** for each satisfied driver
-- [ ] All 13 review dimensions covered
+- [ ] All 15 review dimensions covered
+- [ ] Simplicity signals counted, and every breach either justified or raised
 - [ ] Every finding cites evidence (`path:line`)
 - [ ] Every finding cites the standard or driver violated
 - [ ] Items without evidence recorded as Observations, not Findings

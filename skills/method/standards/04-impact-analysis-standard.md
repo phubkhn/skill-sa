@@ -14,6 +14,7 @@
 | Data impact | schema changes, migrations, backfills, retention changes |
 | Operational impact | deployment, runbooks, monitoring, on-call, capacity, cost |
 | Organisational impact | which teams must do work; cross-team dependencies |
+| Decommissioning | one row per element being removed — see below |
 | Stale artifacts | existing design documents invalidated by this change |
 | Effort & sequencing | rough size per element and the order constraints between them |
 | Risk summary | pointer to risk register entries created by this analysis |
@@ -36,6 +37,15 @@
 5. **Every removal needs a decommissioning path** — who calls it today, how they stop, when it is switched off.
 6. **Stale artifacts are named with paths**, so the SA can re-run exactly those steps.
 
+## Decommissioning table
+
+Every element with impact `Remove` gets a row. Rule 5 requires a decommissioning path; this is where it lives, because otherwise it lives nowhere and the element runs for another three years.
+
+| Element | Who still calls it | How they stop | Migration deadline | Switch-off date | Data disposition | Who confirms nothing reads it |
+|---|---|---|---|---|---|---|
+
+`Data disposition` is one of: migrated to `<target>` · archived until `<date>` · deleted per `<retention rule>`. "Left in place" is not a disposition — it is an unowned data store with a sensitivity classification nobody is maintaining.
+
 ## Blast radius heuristic
 
 For each impacted element, walk one hop outward: who calls it, who it calls, who reads its data, who consumes its events, who deploys with it. Stop when a hop yields no new element. Anything reached is in the table.
@@ -50,7 +60,8 @@ For each impacted element, walk one hop outward: who calls it, who it calls, who
 
 Self-assess against this list before reporting the artifact done. Report pass/fail **per item** — never a silent pass. A failed item becomes an OPEN item with an owner; it is not deleted to make the list pass.
 
-- [ ] Baseline states the source of current-state knowledge
+- [ ] Baseline states the source of current-state knowledge, and **every baseline claim carries a source** — `path:line`, a named document, or a named person and date
+- [ ] Unsourced baseline statements rewritten as Assumptions, not left as facts
 - [ ] Blast-radius walk performed to a hop that added nothing new
 - [ ] Elements verified as unaffected are listed explicitly with evidence
 - [ ] Every impacted row has impact type, nature, owner team, effort
@@ -59,7 +70,7 @@ Self-assess against this list before reporting the artifact done. Report pass/fa
 - [ ] Operational impact covers deploy, monitoring, on-call, capacity, cost
 - [ ] Organisational impact names the teams and the sequencing constraints
 - [ ] Stale artifacts listed by path with the refresh command
-- [ ] Every removal has a decommissioning path
+- [ ] Every removal has a row in the decommissioning table, with switch-off date, data disposition and a named confirmer
 - [ ] Rollback considered
 - [ ] Unknowns recorded as `Unknown (investigate)` with owner, not guessed
 - [ ] Candidate risks emitted to the risk register

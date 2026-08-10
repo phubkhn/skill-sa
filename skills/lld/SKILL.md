@@ -1,6 +1,7 @@
 ---
 name: lld
 description: Produce the internal design of one component: responsibilities, non-responsibilities, interfaces, data ownership, state machines, concurrency, failure modes. Use when the user asks for low-level design or detailed component design.
+allowed-tools: Read, Grep, Glob
 ---
 
 # SA — Produce the internal design for one component
@@ -13,7 +14,7 @@ description: Produce the internal design of one component: responsibilities, non
 | Gate | G2 (before running) |
 | Standards | `../method/standards/01-workflow-protocol.md`, `../method/standards/08-lld-standard.md` |
 
-**Method contract:** read `../method/SKILL.md` and `../method/standards/01-workflow-protocol.md` before acting. All nine execution phases (P1–P9) are defined there and are mandatory.
+**Method contract:** read `../method/SKILL.md`, `../method/standards/01-workflow-protocol.md` and `../method/standards/26-operating-guardrails.md` before acting. All nine execution phases (P1–P9) are mandatory, as is the write boundary at P7.
 
 **Checklist:** the `## Checklist` section of `../method/standards/08-lld-standard.md` — self-assess item by item in P9.
 
@@ -33,6 +34,8 @@ Arguments: $ARGUMENTS — `<component>`. If absent, list components from the HLD
 2. Write **non-responsibilities** explicitly — what neighbours own.
 3. List `provides` and `consumes` interfaces. Every consumed dependency **must** carry `reason`, `failure-behaviour`, and `timeout` — taken from the flows and the resilience design; if absent there, decide now and feed it back.
 4. Split data into `owns` (sole writer, with retention and sensitivity) and `references` (with freshness tolerance). A component owning nothing and referencing everything is a coordination smell — flag it.
+
+   **Two-pass rule (Standard 00):** this LLD is the *seed* for data ownership and `sa:data` is the *authority*. If `07-data/data-design.md` does not exist yet, declare ownership provisionally and mark it `provisional: true`; the LLD must then be re-run in Update mode once `sa:data` has fixed the owners. If the data design does exist and disagrees with this component's claim, **stop** — that conflict is an ADR, not a silent edit.
 5. Model state machines for any entity with more than two states.
 6. Specify concurrency: model, shared state, ordering guarantees, idempotency.
 7. List configuration keys, marking secrets — values never appear.
@@ -41,4 +44,4 @@ Arguments: $ARGUMENTS — `<component>`. If absent, list components from the HLD
 
 **P8:** `../method/templates/lld.yaml`. Update mode: edit in place, prepend changelog entry, bump MINOR (additive) or MAJOR (responsibility/ownership change).
 
-**P9:** report responsibility↔interface coverage (any orphan on either side is a defect), then `Next: /sa:gen-interface <component>`.
+**P9:** report responsibility↔interface coverage (any orphan on either side is a defect), then `Next: sa:interface <component>`.

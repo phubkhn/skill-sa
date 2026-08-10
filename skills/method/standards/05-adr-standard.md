@@ -64,6 +64,24 @@ ADRs, drivers, artifacts affected.
 5. **One decision per ADR.** Bundled decisions cannot be superseded independently.
 6. **Status is honest.** `Proposed` until the deciders have actually agreed.
 
+## Build vs buy vs reuse — required evaluation axes
+
+When the decision involves adopting a third-party product or service, the options table is not enough. Add these rows to the evaluation matrix, because they are the ones that hurt three years later and none of them are visible in a feature comparison.
+
+| Axis | The question to answer concretely |
+|---|---|
+| Exit cost | what does leaving cost, in effort and in elapsed time? Who has done it? |
+| Data portability | can we get our data out, in a usable shape, without the vendor's cooperation? |
+| Lock-in surface | how much of our code and our data model has to know this vendor exists? |
+| SLA vs our driver | is their contractual availability at least our target? (Standard 13 — a hard dependency caps you at its own ceiling) |
+| Data residency | where does data physically live, and does that satisfy the compliance obligations in the security design? |
+| Roadmap dependency | are we depending on something they have promised but not shipped? |
+| Support model | response times, escalation path, and what happens outside business hours |
+| Total cost at scale | licence plus consumption at the 36-month volume (Standard 23), not at today's |
+| Viability | is the vendor likely to exist, and to still support this product, for the life of our system? |
+
+**Every buy decision states its exit plan** in the Consequences section. Not a detailed migration — a paragraph naming what we would do and roughly what it would cost. An adoption with no exit plan is not a decision, it is a marriage.
+
 ## Index format (`adr-index.md`)
 
 | ADR | Title | Status | Date | Drivers | Supersedes | Superseded by |
@@ -82,7 +100,9 @@ Self-assess against this list before reporting the artifact done. Report pass/fa
 - [ ] Decision is one sentence, active voice
 - [ ] **Negative consequences stated**
 - [ ] "What becomes harder later" stated
-- [ ] Compliance/verification mechanism defined
+- [ ] Compliance/verification mechanism defined — automated as a fitness function where the property is mechanically checkable (Standard 24)
+- [ ] Consistent with the architecture principles, or the deviation is stated and argued
+- [ ] For a buy/adopt decision: all nine vendor axes evaluated, and an exit plan stated in Consequences
 - [ ] Status honest (`Proposed` unless deciders actually agreed)
 - [ ] Existing ADRs checked for conflict; supersession recorded if any
 - [ ] Number is highest existing + 1, zero-padded

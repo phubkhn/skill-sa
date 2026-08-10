@@ -26,8 +26,12 @@ Technical · Integration · Data · Security · Performance/Capacity · Operatio
 4. Every residual risk in the security design
 5. Every residual risk in the failure-mode table
 6. Every driver whose measure is unverified
-7. Every gate that was overridden
+7. Every gate that was overridden **or disabled in `sa-config.yaml`**
 8. Every dependency owned by another team or vendor
+9. Every cost figure labelled `estimated` that materially affects a decision
+10. Every buy/adopt decision with no exit plan
+11. Every coexistence arrangement with no end date
+12. Every seed artifact still contradicting its authority under the two-pass rule
 
 ## Trade-off log
 
@@ -48,7 +52,8 @@ Architecture is the sum of its trade-offs. Record them where they are not big en
 
 Self-assess against this list before reporting the artifact done. Report pass/fail **per item** — never a silent pass. A failed item becomes an OPEN item with an owner; it is not deleted to make the list pass.
 
-- [ ] All nine candidate sources swept, not brainstormed
+- [ ] All twelve candidate sources swept, not brainstormed
+- [ ] Risk IDs carry the scope (`RISK-<scope>-NNN`)
 - [ ] Every risk phrased conditionally (because X, Y may occur, resulting in Z)
 - [ ] Probability and impact scales defined for this project
 - [ ] Duplicates merged across artifacts, sources linked

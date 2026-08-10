@@ -1,0 +1,161 @@
+component: order-intake
+version: "1.1"
+status: Accepted
+trace-id: TR-express-lane-001
+owner-team: Orders
+
+purpose: >
+  Accepts an order from a client, decides whether it is new or a resubmission,
+  records it durably, and announces its acceptance. It does not process orders
+  and holds no opinion about what happens to them afterwards.
+
+responsibilities:
+  - id: R1
+    description: Validate a submitted order against the contract schema and business preconditions
+    satisfies-drivers: [QA-DATA-01]
+  - id: R2
+    description: Determine whether this submission duplicates a previous one within the dedup window
+    satisfies-drivers: [QA-DATA-01]
+  - id: R3
+    description: Durably record an accepted order together with its idempotency key, atomically
+    satisfies-drivers: [QA-AVAIL-01]
+  - id: R4
+    description: Announce acceptance to downstream consumers with at-least-once delivery
+    satisfies-drivers: [QA-AVAIL-01, QA-PERF-01]
+
+non-responsibilities:
+  - Processing or fulfilling orders — fulfilment-service owns this
+  - Serving order state to clients — order-service owns this
+  - Pricing, inventory and tax — unchanged, owned by their existing services
+  - Reconciling historical duplicates — recon-batch owns this
+
+interfaces:
+  provides:
+    - name: POST /orders
+      kind: sync-api
+      spec: 06-interfaces/order-intake-api.yaml#/paths/~1orders/post
+      implements: R1
+      consumers: [web-client, mobile-client]
+    - name: order.accepted
+      kind: async-event
+      spec: 06-interfaces/order-intake-events.yaml#/channels/order.accepted
+      implements: R4
+      consumers: [fulfilment-service]
+  consumes:
+    - name: orders-db write
+      from: orders-db
+      reason: R3 requires a durable record before acknowledgement; RPO is 0
+      failure-behaviour: fail-fast
+      timeout: 70ms
+    - name: orders-db idempotency lookup
+      from: orders-db
+      reason: R2 cannot be answered without it
+      failure-behaviour: fail-fast
+      timeout: 50ms
+    - name: order-events publish
+      from: order-events
+      reason: R4
+      failure-behaviour: queue
+      timeout: 80ms
+      note: >
+        Published from a transactional outbox written in the same transaction as
+        the order. A publish failure never invalidates an acknowledgement already
+        issued — the relay retries with backoff.
+
+data:
+  owns:
+    - entity: Order
+      store: orders-db
+      retention: 7 years from creation (tax obligation, DPA clause 7.2)
+      sensitivity: confidential
+      note: >
+        Sole writer on the intake path. order-service writes OrderState, a disjoint
+        column set. Confirmed as the authority by 07-data/data-design.md v1 —
+        this component's provisional claim in v1.0 was upheld.
+    - entity: IdempotencyKey
+      store: orders-db
+      retention: 30 days rolling (dedup window is 24 h; 30 d gives investigation headroom)
+      sensitivity: internal
+  references: []
+
+state-machines:
+  - entity: Order
+    states: [accepted, processing, fulfilled, rejected]
+    transitions:
+      - from: accepted
+        to: processing
+        trigger: fulfilment-service claims the event
+        guard: none
+      - from: processing
+        to: fulfilled
+        trigger: fulfilment completes
+        guard: none
+      - from: processing
+        to: rejected
+        trigger: fulfilment fails terminally
+        guard: retry cap exhausted
+    note: order-intake writes only the initial `accepted` state; the rest belongs to order-service
+
+concurrency:
+  model: request-per-thread, stateless pods
+  shared-state: none in-process; all coordination is via the unique index on idempotency_key
+  ordering-guarantees: none required — orders are independent
+  idempotency: >
+    Client-supplied Idempotency-Key, unique index in the database. A concurrent
+    duplicate loses the insert race, catches the constraint violation, and returns
+    the winner's order id. The database is the arbiter, not application logic.
+
+configuration:
+  - key: DEDUP_WINDOW_HOURS
+    purpose: how far back a resubmission is recognised
+    default: 24
+    secret: false
+  - key: DB_WRITE_TIMEOUT_MS
+    purpose: must stay within the 120 ms database budget
+    default: 70
+    secret: false
+  - key: ORDERS_DB_PASSWORD
+    purpose: database credential
+    default: null
+    secret: true
+
+failure-modes:
+  - mode: orders-db unavailable
+    detection: connection errors; intake error rate metric
+    handling: fail-fast, 503 with Retry-After
+    user-visible-effect: submission rejected; safe to retry with the same key
+  - mode: publish to order-events fails
+    detection: outbox relay lag metric
+    handling: outbox retries with backoff; acceptance already durable
+    user-visible-effect: none at submission; downstream processing delayed
+  - mode: idempotency lookup exceeds 50 ms
+    detection: dedup latency histogram
+    handling: fail-fast rather than breach the 800 ms end-to-end budget
+    user-visible-effect: 503; retry safe
+  - mode: duplicate insert race
+    detection: constraint violation counter
+    handling: return the winning order's id
+    user-visible-effect: none — this is correct behaviour, not a failure
+
+constraints:
+  - Order data stays in-region (DPA clause 7.2)
+  - Authentication via the existing OIDC provider (SEC-011)
+  - Acknowledgement must not imply fulfilment (ADR-0001)
+
+open-items: []
+
+changelog:
+  - version: "1.1"
+    date: 2026-03-12
+    author: J. Okafor
+    change-type: Update
+    ref: none
+    changes: >
+      Data ownership confirmed against 07-data/data-design.md v1 (two-pass rule);
+      provisional flag removed. No structural change.
+  - version: "1.0"
+    date: 2026-03-10
+    author: J. Okafor
+    change-type: Initial
+    ref: none
+    changes: Initial, with provisional data ownership pending the data design

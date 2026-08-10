@@ -1,27 +1,45 @@
 ---
 name: observability
 description: Design SLOs, SLIs, logs, metrics, traces, correlation propagation and alerting. Use when the user asks about observability, monitoring, SLOs, alerting, or how the system will be operated and diagnosed.
+allowed-tools: Read, Grep, Glob
 ---
 
 # SA — Design SLOs, signals, correlation and alerting
 
 | | |
 |---|---|
-| Journey step | 11 — Observability |
+| Journey step | 12 — Observability |
 | Produces | 08-crosscutting/observability-design.md |
 | Inputs | 00-context/architecture-drivers.md, 04-flows/*, 05-lld/*, 08-crosscutting/resilience-design.md |
 | Gate | none |
 | Standards | `../method/standards/01-workflow-protocol.md`, `../method/standards/12-observability-standard.md` |
 
-**Method contract:** read `../method/SKILL.md` and `../method/standards/01-workflow-protocol.md` before acting. All nine execution phases (P1–P9) are defined there and are mandatory.
+**Method contract:** read `../method/SKILL.md`, `../method/standards/01-workflow-protocol.md` and `../method/standards/26-operating-guardrails.md` before acting. All nine execution phases (P1–P9) are mandatory, as is the write boundary at P7.
 
 **Checklist:** the `## Checklist` section of `../method/standards/12-observability-standard.md` — self-assess item by item in P9.
+
+## When to use
+
+- "how will we know it's working", "what do we monitor", "what alerts do we need"
+- Turning a driver's number into an SLI that is actually computable
+- Correlation propagation across async, batch and scheduled boundaries
+
+## When not to use
+
+| Request | Use instead |
+|---|---|
+| "what should the SLO target be" | `sa:drivers` — this implements the target, it does not choose it |
+| "what happens when it fails" | `sa:resilience` — and run it first; its failure modes are this skill's input |
+| "why does this artifact exist / what's out of date" | `sa:trace` — design traceability, not runtime tracing |
+| configure OpenTelemetry, write dashboards | not this skill set — this designs the signals, the team builds them |
 
 ---
 
 Follow `../method/standards/01-workflow-protocol.md` P1–P9.
 
-**P3:** read drivers (availability/performance numbers become SLOs), flows (instrumentation points and the observability hooks already noted), LLDs (state machines, jobs, dependencies), resilience design (failure modes needing detection).
+**P3:** read drivers (availability/performance numbers become SLOs), flows (instrumentation points and the observability hooks already noted), LLDs (state machines, jobs, dependencies), resilience design (failure modes needing detection), security design (audit and detection requirements).
+
+**Ordering is strict: `sa:resilience` runs first.** The failure-mode table is the input to the detection-coverage section, not an optional extra. If `08-crosscutting/resilience-design.md` does not exist, say so and recommend running `sa:resilience` before continuing — proceeding produces a signal set with nothing to anchor it.
 
 **Method:**
 
@@ -36,4 +54,6 @@ Follow `../method/standards/01-workflow-protocol.md` P1–P9.
 9. **Dashboards:** per audience, per question.
 10. **Retention, cost and access**, including who may see production telemetry.
 
-**P9:** report undetectable failure modes and SLOs without a computable SLI, then `Next: /sa:gen-resilience`.
+**P8:** `../method/templates/observability-design.md`.
+
+**P9:** report undetectable failure modes and SLOs without a computable SLI, then `Next: sa:risk <scope>`.

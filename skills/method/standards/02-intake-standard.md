@@ -1,7 +1,16 @@
 # Standard 02 — Intake
 
-**Artifact:** `00-context/sa-intent.md` (+ `stakeholders.md`)
+**Artifacts:** `00-context/sa-intent.md`, `00-context/stakeholders.md`, and `00-context/principles.md` where none exists yet
+**Templates:** `templates/sa-intent.md`, `templates/stakeholders.md`, `templates/principles.md`
 **Purpose:** fix the problem before anyone designs a solution.
+
+At `light` profile the intent is short-form — problem statement, in/out of scope, stakeholders, constraints — and `stakeholders.md` is folded into it. The out-of-scope list stays non-empty at every profile, because that is what gate G1 checks.
+
+## Architecture principles
+
+Principles are organisation-level and outlive the initiative, so check whether one already exists before writing a new one. Every ADR is later checked against them; a deviation is permitted but must be argued in the ADR rather than passed over.
+
+A principle that nobody could disagree with is not a principle. A usable one forecloses something concrete: "we prefer boring technology — a new runtime requires an ADR naming who operates it" rules something out; "we value quality" does not.
 
 ## Required sections
 
@@ -58,3 +67,4 @@ Self-assess against this list before reporting the artifact done. Report pass/fa
 - [ ] Every open question has an owner and a by-when
 - [ ] Glossary terms have exactly one meaning
 - [ ] No invented answers — unknowns are recorded as open questions
+- [ ] Architecture principles exist (found elsewhere or written), each with a rationale and something it rules out

@@ -1,6 +1,7 @@
 ---
 name: interface
 description: Design synchronous (OpenAPI) and asynchronous (AsyncAPI) contracts for a component, with consumers, error shapes, idempotency, versioning and compatibility classification. Use when the user asks for API design, an API spec, event contracts, or interface design.
+allowed-tools: Read, Grep, Glob
 ---
 
 # SA — Produce synchronous and asynchronous contracts for one component
@@ -13,7 +14,7 @@ description: Design synchronous (OpenAPI) and asynchronous (AsyncAPI) contracts 
 | Gate | none |
 | Standards | `../method/standards/01-workflow-protocol.md`, `../method/standards/09-interface-standard.md` |
 
-**Method contract:** read `../method/SKILL.md` and `../method/standards/01-workflow-protocol.md` before acting. All nine execution phases (P1–P9) are defined there and are mandatory.
+**Method contract:** read `../method/SKILL.md`, `../method/standards/01-workflow-protocol.md` and `../method/standards/26-operating-guardrails.md` before acting. All nine execution phases (P1–P9) are mandatory, as is the write boundary at P7.
 
 **Checklist:** the `## Checklist` section of `../method/standards/09-interface-standard.md` — self-assess item by item in P9.
 
@@ -40,4 +41,4 @@ Arguments: $ARGUMENTS — `<component>` and optionally `sync|async|both` (defaul
 
 **P8:** `../method/templates/openapi.yaml` / `../method/templates/asyncapi.yaml`. Validate the document parses and every `$ref` resolves before reporting success.
 
-**P9:** report operation↔responsibility coverage and breaking changes, then `Next: /sa:gen-data-design` or `/sa:review-design`.
+**P9:** report operation↔responsibility coverage and breaking changes, then `Next: sa:data <scope>` or `sa:review <scope>`.

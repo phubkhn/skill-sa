@@ -1,6 +1,7 @@
 ---
 name: adr
 description: Write an Architecture Decision Record with real alternatives, evaluation against drivers, and negative consequences. Use when a structural, hard-to-reverse or contested choice must be recorded, or the user asks for an ADR or decision record.
+allowed-tools: Read, Grep, Glob
 ---
 
 # SA — Record an architecture decision with alternatives and consequences
@@ -13,9 +14,24 @@ description: Write an Architecture Decision Record with real alternatives, evalu
 | Gate | none |
 | Standards | `../method/standards/01-workflow-protocol.md`, `../method/standards/05-adr-standard.md` |
 
-**Method contract:** read `../method/SKILL.md` and `../method/standards/01-workflow-protocol.md` before acting. All nine execution phases (P1–P9) are defined there and are mandatory.
+**Method contract:** read `../method/SKILL.md`, `../method/standards/01-workflow-protocol.md` and `../method/standards/26-operating-guardrails.md` before acting. All nine execution phases (P1–P9) are mandatory, as is the write boundary at P7.
 
 **Checklist:** the `## Checklist` section of `../method/standards/05-adr-standard.md` — self-assess item by item in P9.
+
+## When to use
+
+- "record this decision", "write an ADR", "why did we choose X"
+- Any choice that is hard to reverse, cross-cutting, cost-bearing, contested or surprising
+- Adopting a vendor or a technology new to the estate
+
+## When not to use
+
+| Request | Use instead |
+|---|---|
+| "compare two whole approaches for this system" | `sa:options` — that compares solution shapes; this records one decision |
+| a choice one team could reverse in an afternoon | the trade-off log in `sa:risk` — not everything needs an ADR |
+| "what does the design look like" | `sa:hld` — the ADR is the reasoning, the HLD is the shape |
+| two decisions at once | two ADRs — bundled decisions cannot be superseded independently |
 
 ---
 
@@ -38,6 +54,6 @@ Arguments: $ARGUMENTS — the decision, in a few words. If absent, list the open
 
 **P6:** show the evaluation matrix in the Change Summary. This is the part worth arguing about before it is written.
 
-**P8:** `../method/templates/adr.md`; append a row to `adr-index.md`; if superseding, edit the old ADR's status line only.
+**P8:** `../method/templates/adr.md`; append a row to `02-decisions/adr-index.md`, creating it from `../method/templates/adr-index.md` if absent; if superseding, edit the old ADR's status line only.
 
-**P9:** `Next: /sa:gen-hld <scope>` once the structural ADRs are Accepted.
+**P9:** `Next: sa:hld <scope>` once the structural ADRs are Accepted.

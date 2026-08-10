@@ -1,0 +1,35 @@
+# _logs/.design-log
+#
+# Append-only YAML list. One entry per artifact write, added in P8 by every
+# generating skill. Never edit or reorder existing entries — `sa:trace` parses
+# this file to rebuild the trace index.
+#
+# Entry schema:
+#
+# - artifact: <path relative to docs-root>
+#   step: <journey step number, standard 00>
+#   date: <YYYY-MM-DD>
+#   author: <git config user.name>
+#   version: <N | N.M | N.M.P>
+#   mode: Initial | Update
+#   change-type: Initial | Update | Change Request | Corrective
+#   ref: CR-<id> | FINDING-<id> | INC-<id> | none
+#   trace-id: <TR-scope-NNN>
+#   delta: <one line — what changed and why>
+#   stale-downstream: [<path>, <path>] | []
+#
+# Example:
+#
+# - artifact: 03-hld/container-checkout.puml
+#   step: 5
+#   date: 2026-08-10
+#   author: Jane Doe
+#   version: 4
+#   mode: Update
+#   change-type: Change Request
+#   ref: CR-882
+#   trace-id: TR-checkout-014
+#   delta: split payment-adapter out of order-service per ADR-0009
+#   stale-downstream: [04-flows/client-submit-order.puml, 05-lld/order-service.yaml]
+
+[]

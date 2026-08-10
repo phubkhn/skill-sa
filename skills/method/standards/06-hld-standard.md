@@ -31,6 +31,8 @@
 4. **Dependencies point one way.** Cycles between containers are a finding; if unavoidable, they need an ADR.
 5. **Every element traces to a driver.** A component that satisfies no driver should not exist.
 6. **The diagram must match the ADRs.** If the ADR says async, the diagram shows dotted lines.
+7. **One owning team per container.** A container that two teams deploy is a finding — Conway's law will make the boundary real whether the diagram admits it or not. Either split the container along the team boundary, or consolidate ownership; record the choice in an ADR. Team ownership is a column in the element catalogue.
+8. **End-to-end budgets are allocated per hop.** Every latency and availability driver expressed end-to-end is split across the relationship catalogue, so each hop carries a number. The sum of hop budgets plus overhead must fit the driver target; if it does not, the topology is wrong and that is a finding, not a rounding error.
 
 ## Coupling checks (run before finishing)
 
@@ -40,22 +42,24 @@
 | Chatty integration | a single user action produces > 5 network round trips |
 | Shared database | two containers write the same store |
 | Cyclic dependency | A → B → A at container level |
-| Godot component | one container holds > 40% of the responsibilities |
+| God component | one container holds > 40% of the responsibilities |
 | Orphan | element with no inbound and no outbound relationship |
 
 ## Documentation alongside the diagram
 
 Every HLD diagram ships with an element catalogue:
 
-| Element | Type | Responsibility | Owns (data) | Technology | Drivers addressed |
-|---|---|---|---|---|---|
+| Element | Type | Responsibility | Owns (data) | Technology | Owning team | Interface spec | Drivers addressed |
+|---|---|---|---|---|---|---|---|
+
+`Interface spec` holds either the spec path or `N/A — <reason>`. Gate G3 reads this column; an empty cell fails the gate, an honest `N/A` does not.
 
 And a relationship catalogue:
 
-| From | To | Protocol | Sync/Async | Purpose | Failure behaviour |
-|---|---|---|---|---|---|
+| From | To | Protocol | Sync/Async | Purpose | Latency budget | Failure behaviour |
+|---|---|---|---|---|---|---|
 
-The `Failure behaviour` column is not optional — it is where resilience design begins.
+The `Failure behaviour` column is not optional — it is where resilience design begins. The `Latency budget` column is where the end-to-end driver gets spent.
 
 ## Update discipline
 
@@ -73,9 +77,13 @@ Self-assess against this list before reporting the artifact done. Report pass/fa
 - [ ] External systems outside the trust boundary
 - [ ] ≤ ~12 elements per diagram
 - [ ] Data ownership stated per container; no store shared by two containers
+- [ ] Exactly one owning team per container
+- [ ] Element catalogue has an interface-spec path or a written `N/A — <reason>` for every element
 - [ ] Relationship catalogue includes a failure-behaviour column, filled
-- [ ] Coupling checks run and reported: fan-out, chattiness, cycles, god component, orphans
+- [ ] Relationship catalogue includes a latency budget per hop, summing within the end-to-end driver target
+- [ ] Coupling checks run and reported: fan-out, chattiness, shared store, cycles, god component, orphans
 - [ ] Every element traces to ≥1 driver, or is flagged for deletion
+- [ ] Deployment view produced where the profile requires it (Standard 22)
 - [ ] Diagram agrees with every Accepted ADR
 - [ ] Update mode preserved untouched elements verbatim
 - [ ] `@startuml/@enduml` balanced; no duplicate or undeclared aliases

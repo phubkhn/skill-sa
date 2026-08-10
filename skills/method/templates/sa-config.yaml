@@ -1,0 +1,55 @@
+# Solution Architect workspace configuration.
+# Written by `sa:init` at the repository root. Read by every sa skill in P2.
+# See standards/01-workflow-protocol.md for how each key changes behaviour.
+
+scope: <slug>                  # kebab-case initiative slug; used in trace and risk ids
+
+profile: standard              # light | standard | full — standards/21-tailoring.md
+                               # decides which artifacts are required and which gates run
+
+language: en                   # language of artifact PROSE only.
+                               # File names, element names, field names, IDs and enum
+                               # values stay English kebab-case regardless.
+
+docs-root: docs/architecture   # every path in this skill set is relative to this
+
+diagram: plantuml              # standard 18 covers plantuml only
+
+contracts:
+  sync: openapi-3.1
+  async: asyncapi-2.6
+
+# Steps this initiative will run. A step absent from this list is refused by its
+# skill, naming this line as the reason. Trim it to what the profile requires;
+# excluded steps can still be run deliberately by editing this list.
+steps-enabled:
+  - intake
+  - drivers
+  - impact
+  - options
+  - adr
+  - hld
+  - flow
+  - lld
+  - interface
+  - data
+  - security
+  - resilience        # runs before observability — failure modes precede signals
+  - observability
+  - cost
+  - risk
+  - review
+  - handoff
+
+# A gate set to false is skipped — and skipping writes an accepted risk naming
+# whoever configured it off. Defaults follow the profile:
+#   light    -> G1 only
+#   standard -> G1, G2, G4
+#   full     -> all four
+gates:
+  G1: true            # problem understood      (before impact)
+  G2: true            # design baseline         (before lld)
+  G3: true            # contract frozen         (before handoff)
+  G4: true            # fit to build            (before implementation)
+
+trace-prefix: TR

@@ -1,21 +1,37 @@
 ---
 name: resilience
 description: Design failure behaviour, degradation modes, timeouts, retries, capacity and recovery. Use when the user asks about resilience, high availability, failure handling, capacity planning, or disaster recovery.
+allowed-tools: Read, Grep, Glob
 ---
 
 # SA — Design failure behaviour, capacity and operability
 
 | | |
 |---|---|
-| Journey step | 12 — Resilience |
+| Journey step | 11 — Resilience |
 | Produces | 08-crosscutting/resilience-design.md |
 | Inputs | 00-context/architecture-drivers.md, 03-hld/*, 04-flows/*, 05-lld/* |
 | Gate | none |
 | Standards | `../method/standards/01-workflow-protocol.md`, `../method/standards/13-resilience-standard.md` |
 
-**Method contract:** read `../method/SKILL.md` and `../method/standards/01-workflow-protocol.md` before acting. All nine execution phases (P1–P9) are defined there and are mandatory.
+**Method contract:** read `../method/SKILL.md`, `../method/standards/01-workflow-protocol.md` and `../method/standards/26-operating-guardrails.md` before acting. All nine execution phases (P1–P9) are mandatory, as is the write boundary at P7.
 
 **Checklist:** the `## Checklist` section of `../method/standards/13-resilience-standard.md` — self-assess item by item in P9.
+
+## When to use
+
+- "what happens when X goes down", "how does this degrade", "disaster recovery"
+- Capacity planning, timeout and retry budgets, circuit breakers
+- Whenever a new remote dependency enters the design
+
+## When not to use
+
+| Request | Use instead |
+|---|---|
+| "what should our availability target be" | `sa:drivers` — this designs *to* a target, it does not set one |
+| "how will we know it failed" | `sa:observability` — but run this skill first; failure modes are its input |
+| "what does the redundancy cost" | `sa:cost` — which needs the capacity table this skill produces |
+| "where does it run / which zones" | `sa:hld` deployment view — placement precedes failure design |
 
 ---
 
@@ -35,4 +51,6 @@ Follow `../method/standards/01-workflow-protocol.md` P1–P9.
 8. **Operability:** deployment strategy, rollback, feature flags, safe config change, runbooks required.
 9. **Verification:** load test, chaos experiment, failover drill, restore drill — with cadence.
 
-**P9:** report dependencies whose availability ceiling breaches the target, calls with no timeout, and assumed capacity numbers, then `Next: /sa:gen-risk-register`.
+**P8:** `../method/templates/resilience-design.md`.
+
+**P9:** report dependencies whose availability ceiling breaches the target, calls with no timeout, and assumed capacity numbers, then `Next: sa:observability <scope>`.

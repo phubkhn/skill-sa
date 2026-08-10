@@ -1,25 +1,28 @@
 ---
 name: risk
 description: Sweep every artifact for risks and consolidate them into an owned register with probability, impact, mitigation and review dates, plus a trade-off log. Use when the user asks for a risk register, risk analysis, or trade-off documentation.
+allowed-tools: Read, Grep, Glob
 ---
 
 # SA — Consolidate risks and trade-offs into an owned register
 
 | | |
 |---|---|
-| Journey step | 13 — Risk |
+| Journey step | 14 — Risk |
 | Produces | 01-analysis/risk-register.md |
 | Inputs | all artifacts under docs/architecture |
 | Gate | none |
 | Standards | `../method/standards/01-workflow-protocol.md`, `../method/standards/14-risk-standard.md` |
 
-**Method contract:** read `../method/SKILL.md` and `../method/standards/01-workflow-protocol.md` before acting. All nine execution phases (P1–P9) are defined there and are mandatory.
+**Method contract:** read `../method/SKILL.md`, `../method/standards/01-workflow-protocol.md` and `../method/standards/26-operating-guardrails.md` before acting. All nine execution phases (P1–P9) are mandatory, as is the write boundary at P7.
 
 **Checklist:** the `## Checklist` section of `../method/standards/14-risk-standard.md` — self-assess item by item in P9.
 
 ---
 
 Follow `../method/standards/01-workflow-protocol.md` P1–P9.
+
+**P8:** `../method/templates/risk-register.md`.
 
 **P3 — sweep, do not brainstorm.** Collect candidates mechanically from:
 
@@ -32,6 +35,10 @@ Follow `../method/standards/01-workflow-protocol.md` P1–P9.
 7. every gate that was overridden
 8. every dependency owned by another team or vendor
 9. every open item with a passed by-when date
+10. every cost figure labelled `estimated` that materially changes the decision
+11. every buy/adopt ADR whose exit plan is missing or hand-waved
+12. every coexistence arrangement with no end date
+13. every seed artifact still contradicting its authority (two-pass rule, Standard 00)
 
 **Method:**
 
@@ -45,4 +52,4 @@ Follow `../method/standards/01-workflow-protocol.md` P1–P9.
 8. Update the **trade-off log** with choices too small for an ADR: gained, given up, drivers favoured, drivers sacrificed, revisit-when.
 9. Never delete a realised risk — mark `Realised` and link the incident.
 
-**P9:** report High-exposure risks lacking mitigation, risks lacking a named owner, and mitigations with no corresponding change, then `Next: /sa:review-design`.
+**P9:** report High-exposure risks lacking mitigation, risks lacking a named owner, and mitigations with no corresponding change, then `Next: sa:review <scope>`.
