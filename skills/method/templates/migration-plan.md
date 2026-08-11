@@ -1,7 +1,5 @@
 # Migration Plan — <scope>
 
-<!-- Header block — copy from standards/01-workflow-protocol.md, phase P8 -->
-
 ## Strategy
 <big-bang | expand-contract | dual-write | CDC-backfill> — because <reason>
 

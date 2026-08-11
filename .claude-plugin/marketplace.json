@@ -11,7 +11,7 @@
     {
       "name": "sa",
       "source": "./",
-      "description": "Generic Solution Architect skill set — 19 skills, 27 standards, 29 artifact templates, 4 quality gates, 3 tailoring profiles.",
+      "description": "Focused Solution Architect plugin — one primary architect entry point plus ADR, HLD, flow, interface, data and review skills.",
       "category": "workflow"
     }
   ]

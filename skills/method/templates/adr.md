@@ -1,43 +1,40 @@
-# ADR-NNNN — <Decision, imperative>
+# ADR-NNNN — <decision>
 
 | Field | Value |
 |---|---|
-| Status | Proposed \| Accepted \| Rejected \| Superseded by ADR-NNNN \| Deprecated |
+| Status | Proposed \| Accepted \| Rejected \| Superseded |
 | Date | YYYY-MM-DD |
-| Deciders | <names> |
-| Trace ID | TR-<scope>-NNN |
-| Drivers addressed | <QA-… IDs> |
+| Deciders | <names or roles> |
+
+## Decision question
+
+<One consequential question.>
 
 ## Context
-<Forces, driver IDs, constraints, current state, what makes this hard. No solution language.>
 
-## Decision
-We will <one sentence, active voice>.
+<Forces, measurable drivers, constraints, and current state. Cite sources.>
 
 ## Options considered
-| Option | Summary | Pros | Cons | Why not chosen |
-|---|---|---|---|---|
 
-## Evaluation against drivers
-| Driver | Option A | Option B | Option C |
+| Option | Driver fit | Cost and risk | Reversibility |
 |---|---|---|---|
 
+## Decision
+
+We will <one sentence>.
+
 ## Consequences
-**Positive**
-- 
 
-**Negative**   <!-- mandatory -->
-- 
+**Positive:** <...>
 
-**Neutral / follow-on work**
-- 
+**Negative:** <mandatory>
 
-**What becomes harder later**
-- 
+**Reconsider when:** <trigger>
 
 ## Compliance
-<How anyone can verify this decision is actually being followed.>
+
+<How anyone can check that the decision is followed.>
 
 ## Related
-- Supersedes / superseded by:
-- Affected artifacts:
+
+<Superseded decision and affected artifacts.>

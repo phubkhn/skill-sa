@@ -1,0 +1,25 @@
+@startuml container-orders
+!define SYNC -->
+!define ASYNC ..>
+
+title Container view — Orders express lane
+
+actor "Submitting client" as client
+
+rectangle "Orders system" {
+  component "order-intake\nAccepts, deduplicates, owns order status" as intake
+  queue "order-events\nDurable acceptance handoff" as topic
+  database "orders-db\nOrders, keys, outbox" as db
+}
+
+component "fulfilment-service\nProcesses accepted orders" as fulfil
+component "recon-batch\nNightly safety-net reconciliation" as recon
+
+client SYNC intake : POST /orders; GET /orders/{id}\nHTTPS + OIDC
+intake SYNC db : write and read owned order data\nJDBC
+intake ASYNC topic : order.accepted\nKafka, transactional outbox
+topic ASYNC fulfil : consume order.accepted\nat-least-once
+fulfil SYNC intake : PUT /internal/orders/{id}/state\nHTTPS + service scope
+recon SYNC db : read replica, nightly
+
+@enduml

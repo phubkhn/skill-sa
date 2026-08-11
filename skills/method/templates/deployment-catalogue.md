@@ -1,7 +1,6 @@
 # Deployment Catalogue — <environment> — <scope>
 
-<!-- Accompanies 03-hld/deployment-<environment>.puml. Standard 22. -->
-<!-- Header block — copy from standards/01-workflow-protocol.md, phase P8 -->
+<!-- Accompanies docs/architecture/hld/deployment-<environment>.puml unless the repository uses another established layout. -->
 
 **Environment:** <production | staging | …>
 **Differs from production by:** <state it, or "n/a — this is production">
@@ -50,7 +49,7 @@
 |---|---|---|---|
 | | | | |
 
-<!-- Must agree with the zone/region loss rows in 08-crosscutting/resilience-design.md -->
+<!-- Must agree with the resilience assumptions and zone/region loss behaviour in the architecture brief. -->
 
 ## 7. Environment parity
 

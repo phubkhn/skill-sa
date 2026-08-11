@@ -1,0 +1,35 @@
+asyncapi: 2.6.0
+info:
+  title: Order Intake Events
+  version: 1.0.0
+channels:
+  order.accepted:
+    description: Durable notification that an order was accepted.
+    publish:
+      operationId: publishOrderAccepted
+      message:
+        $ref: '#/components/messages/OrderAccepted'
+components:
+  messages:
+    OrderAccepted:
+      name: order.accepted
+      title: Order accepted
+      summary: Fulfilment may begin processing this order.
+      headers:
+        type: object
+        required: [messageId, occurredAt]
+        properties:
+          messageId: {type: string, format: uuid}
+          occurredAt: {type: string, format: date-time}
+      payload:
+        type: object
+        required: [orderId, customerId]
+        properties:
+          orderId: {type: string}
+          customerId: {type: string}
+      x-delivery-semantics: at-least-once
+      x-partition-key: orderId
+      x-retention: 7-days
+      x-consumers:
+        - name: fulfilment-service
+          action: Start fulfilment and deduplicate by messageId.

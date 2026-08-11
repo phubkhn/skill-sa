@@ -1,30 +1,7 @@
-scope: express-lane
-profile: standard
+mode: brief
 language: en
 docs-root: docs/architecture
 diagram: plantuml
 contracts:
   sync: openapi-3.1
   async: asyncapi-2.6
-steps-enabled:
-  - intake
-  - drivers
-  - impact
-  - adr
-  - hld
-  - flow
-  - lld
-  - interface
-  - data
-  - security
-  - resilience
-  - observability
-  - risk
-  - review
-  - handoff
-gates:
-  G1: true
-  G2: true
-  G3: false        # standard profile: G3 not enforced
-  G4: true
-trace-prefix: TR

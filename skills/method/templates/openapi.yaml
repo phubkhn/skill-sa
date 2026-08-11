@@ -2,11 +2,7 @@ openapi: 3.1.0
 info:
   title: <Component> API
   version: "1.0.0"
-  description: <what this API is for; link to the LLD>
-  x-trace-id: TR-<scope>-NNN
-  x-status: Draft
-  x-last-updated: "YYYY-MM-DD"
-  x-updated-by: "<name>"
+  description: <consumer outcome and boundary this API supports>
   x-consumers:
     - name: <consumer>
       uses: [<operationId>]
@@ -25,7 +21,6 @@ paths:
     post:
       summary: <action>
       operationId: <camelCase>
-      x-implements: R1
       x-idempotency: <mechanism, or "safe operation">
       parameters:
         - name: Idempotency-Key

@@ -3,8 +3,6 @@ info:
   title: <Component> Events
   version: "1.0.0"
   description: <what this component publishes and consumes>
-  x-trace-id: TR-<scope>-NNN
-  x-status: Draft
   x-delivery: at-least-once
   x-ordering: none | per-key | global
   x-partition-key: <field>

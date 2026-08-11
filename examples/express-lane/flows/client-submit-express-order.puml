@@ -1,0 +1,54 @@
+@startuml client-submit-express-order
+title Client submits express order
+
+actor "Submitting client" as client
+participant "order-intake" as intake
+database "orders-db" as db
+queue "order-events" as topic
+participant "fulfilment-service" as fulfil
+
+== Happy path ==
+client -> intake : 1. POST /orders\nIdempotency-Key; client timeout 30 s
+intake -> db : 2. Find key; timeout 50 ms
+db --> intake : 3. Not found
+intake -> db : 4. Commit order + key + outbox; timeout 70 ms
+db --> intake : 5. Committed — order is durable
+intake --> client : 6. 202 Accepted + status URL
+intake ->> topic : 7. Outbox relay publishes order.accepted
+topic ->> fulfil : 8. At-least-once delivery; dedup by messageId
+fulfil -> intake : 9. PUT internal state; timeout 500 ms, max 3 retries
+intake -> db : 10. Idempotently update state by eventId
+
+== Duplicate submission ==
+client -> intake : POST /orders with same key
+intake -> db : Find key
+db --> intake : Original order id
+intake --> client : 202 Accepted + original status URL
+
+== Database unavailable ==
+client -> intake : POST /orders
+intake ->x db : Timeout
+intake --> client : 503 + Retry-After
+note over client : Retry with the same key is safe.
+
+== Publish or fulfilment unavailable ==
+intake ->x topic : Relay publish fails
+note over intake : Outbox remains pending; relay retries with backoff.
+topic ->x fulfil : Consumer unavailable
+note over topic : Messages accumulate; alert when lag > 5 min.
+
+== Poison message ==
+topic ->> fulfil : order.accepted
+fulfil -> fulfil : Processing fails; 3 attempts with backoff and jitter
+fulfil ->> topic : Move to DLQ
+note right of fulfil : DLQ depth > 0 pages Fulfilment.\nOPEN: drain runbook before production.
+
+== Terminal outcomes ==
+note over client,fulfil
+Success: accepted and processed.
+Partial: accepted, awaiting retry or in DLQ.
+Failure: 503, no order committed.
+Timed out: client retries with the same key.
+end note
+
+@enduml

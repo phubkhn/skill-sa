@@ -2,45 +2,33 @@
 
 | Field | Value |
 |---|---|
-| Reviewer | |
-| Scope reviewed | |
-| Artifacts + versions | |
+| Reviewer | <name> |
+| Scope | <reviewed boundary> |
+| Artifacts reviewed | <paths> |
 | Verdict | READY \| READY WITH CONDITIONS \| NOT READY |
 
-## Conditions (if any)
-| # | Condition | Owner | By |
-|---|---|---|---|
+## Verdict and conditions
+
+<Mechanical verdict. Give each condition an owner and next action.>
 
 ## Findings
-| ID | Severity | Dimension | Finding | Evidence (path:line) | Standard/Driver violated | Recommendation | Owner |
-|---|---|---|---|---|---|---|---|
+
+| ID | Severity | Finding | Evidence | Rule / driver | Recommendation | Owner |
+|---|---|---|---|---|---|---|
 
 ## Driver coverage
-| Driver | Satisfied? | Mechanism in the design | Evidence | Confidence |
-|---|---|---|---|---|
 
-## Consistency matrix
-| Check | Result | Detail |
-|---|---|---|
-| Every HLD element has an LLD | | |
-| Every LLD responsibility has an operation | | |
-| Every operation maps to a responsibility | | |
-| Flow participants exist in HLD | | |
-| Every published event has a consumer | | |
-| Every consumed event has a publisher | | |
-| One owner per entity | | |
-| Field vocabulary consistent | | |
-| No container-level cycles | | |
-| Design cites only Accepted ADRs | | |
-| Every driver appears in ≥1 artifact | | |
-| Every High risk managed | | |
+| Driver | Mechanism | Evidence | Confidence |
+|---|---|---|---|
 
-## Quality bar results
-| Artifact | Score | Failed items |
-|---|---|---|
+## Consistency and cross-cutting review
+
+<Decisions, structure, flows, contracts, data, security, resilience, observability, cost, deployment and buildability.>
 
 ## What is good
-- 
+
+<Specific strengths.>
 
 ## Not reviewed
-- 
+
+<Explicit scope limits.>

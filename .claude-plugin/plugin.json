@@ -1,7 +1,7 @@
 {
   "name": "sa",
-  "version": "2.0.0",
-  "description": "A generic, standards-driven Solution Architect skill set: 19 skills covering init, intake, drivers, impact, options, decisions, HLD and deployment views, flows, LLD, interfaces, data, security, resilience, observability, cost, risk, review, handoff and traceability — plus 27 standards, 29 templates, 4 gates and 3 tailoring profiles. Domain-, vendor- and language-agnostic.",
+  "version": "3.0.0",
+  "description": "A focused Solution Architect plugin with one primary entry point and six specialist skills for decisions, HLD, runtime flows, interfaces, data architecture and design review.",
   "author": {
     "name": "phubkhn",
     "url": "https://github.com/phubkhn"
@@ -15,13 +15,10 @@
     "adr",
     "c4",
     "hld",
-    "lld",
     "openapi",
     "asyncapi",
-    "threat-model",
     "deployment-view",
-    "cost-model",
-    "fitness-functions",
-    "sdlc"
+    "architecture-review",
+    "architecture-brief"
   ]
 }

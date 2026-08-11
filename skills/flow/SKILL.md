@@ -1,46 +1,28 @@
 ---
 name: flow
-description: Produce a runtime sequence diagram for one flow, including failure paths, timeouts, retries, idempotency and consistency points. Use when the user asks for a flow, sequence diagram, or how a scenario behaves at runtime. Not for CI/CD pipeline definitions or business process modelling notation.
+description: Create or update a runtime sequence diagram for one architecture-significant scenario, including failures, timeouts, retries, idempotency, consistency, and observability points. Use when the user asks how a request or event moves through the system or requests a sequence diagram. Not for CI/CD pipelines or general business process modelling.
 allowed-tools: Read, Grep, Glob
 ---
 
-# SA — Produce a runtime sequence diagram for one flow
+# SA — Runtime flow
 
-| | |
-|---|---|
-| Journey step | 6 — Flows |
-| Produces | 04-flows/<flow-name>.puml + narrative table |
-| Inputs | 03-hld/*, 00-context/architecture-drivers.md, 02-decisions/* |
-| Gate | none |
-| Standards | `../method/standards/01-workflow-protocol.md`, `../method/standards/07-flow-standard.md`, `../method/standards/18-diagram-conventions.md` |
+Model one scenario whose ordering, failure behaviour, or consistency is important. Do not diagram routine CRUD merely for completeness. Follow `../method/SKILL.md` and `../method/standards/workflow.md`.
 
-**Method contract:** read `../method/SKILL.md`, `../method/standards/01-workflow-protocol.md` and `../method/standards/26-operating-guardrails.md` before acting. All nine execution phases (P1–P9) are mandatory, as is the write boundary at P7.
+## Inputs
 
-**Checklist:** the `## Checklist` section of `../method/standards/07-flow-standard.md` — self-assess item by item in P9.
+Read the relevant architecture brief, HLD, ADRs, and existing contracts. Participant names must match the HLD or be explicitly marked as newly proposed.
 
----
+## Method
 
-Follow `../method/standards/01-workflow-protocol.md` P1–P9.
+1. State the trigger, preconditions, participants, and terminal outcomes.
+2. Draw the numbered happy path.
+3. Add applicable failure paths: timeout, dependency unavailable, invalid input, duplicate delivery, partial completion, and recovery.
+4. Annotate cross-boundary timeouts and retries; ensure retries are bounded and safe.
+5. State idempotency for non-safe operations.
+6. Mark durability and eventual-consistency points, including visible inconsistency windows.
+7. Show compensation or reconciliation for multi-step changes.
+8. Add the few signals needed to detect failure and diagnose the flow.
 
-Arguments: $ARGUMENTS — `<flow-name>`. If absent, propose the flow list using Standard 07's selection criteria (cross-component, async, failure-heavy, security-sensitive, driver-linked) and ask which to generate.
+Use `../method/standards/runtime-flow.md`, `../method/standards/diagrams.md`, and `../method/templates/flow-narrative.md`. Default output is `docs/architecture/flows/<flow-name>.puml`; add a narrative only when the diagram cannot hold the required operational detail clearly.
 
-**P3:** read the HLD element catalogue — participant names must match it exactly. Read drivers linked to this flow, and ADRs governing its integration style.
-
-**Method:**
-
-1. State the trigger and all participants. **Reject any participant not present in the HLD** — either add it to the HLD first or rename.
-2. Draw the happy path, numbered.
-3. For **every** cross-boundary call, annotate timeout, retry policy, and backoff. Verify timeout budgets nest (caller > callee total).
-
-   **Two-pass rule (Standard 00):** the flow is the *seed* for timeouts and retries; `sa:resilience` is the *authority* on the nested budget. If no resilience design exists yet, set provisional values and mark them so; re-run this flow in Update mode once the budget is fixed.
-4. For every non-safe operation, state the idempotency mechanism.
-5. Add failure paths — walk the failure checklist in Standard 07 and cover every applicable one, or state why not.
-6. Mark consistency points: where state becomes durable, where it is eventual, and the visible window.
-7. Add compensation/rollback for any multi-step state change.
-8. Show terminal states: success, failure, partial, timed-out.
-9. Add observability hooks — what is emitted at each significant step; these feed `sa:observability`.
-10. If the flow exceeds ~20 steps, decompose into sub-flows and reference them.
-
-**P8:** sequence diagram + narrative table (`../method/templates/flow-narrative.md`). Validate participant names against the HLD one final time before writing.
-
-**P9:** report which failure modes were covered and which were consciously skipped, then the next flow or `sa:lld <component>`.
+Report provisional timeout or retry values as assumptions. Recommend an interface update only when the flow reveals a missing or inconsistent contract.
